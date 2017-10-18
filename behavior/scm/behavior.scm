@@ -42,7 +42,7 @@
 (define-public (update_demand demand num)
 
 	(psi-demand-value-increase (psi-demand (cog-name demand)) (cog-execute! (TimesLink (Number (cog-name num)) (Number "100"))) )
-	(ConceptNode "") 
+	(List (Word ""))
 )
 
 
@@ -70,7 +70,83 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define self_happy (psi-create-emotion "self_happy"))
+(define self_sad (psi-create-emotion "self_sad"))
+
+(define user_happy (psi-create-emotion "user_happy"))
+(define user_sad (psi-create-emotion "user_sad"))
 
 
+(map 
+	(lambda(emo)
+		(psi-set-value! emo 0.5)
+	)
+	(psi-get-emotions)
+)
+
+
+(define-public (update_emotion emoWord rate)
+	(define emo (primitive-eval (string->symbol (cog-name emoWord))))
+	(define val (psi-get-number-value emo))
+	(psi-set-value!  emo (+ val (* val (string->number (cog-name rate)))))
+	(List (Word ""))
+
+)
+
+
+
+(define-public (emotionn emoWord thresh)
+
+	(define emo (primitive-eval (string->symbol (cog-name emoWord))))
+
+	(define truthValue False)
+	
+	(if (>= (psi-get-number-value emo) (string->number (cog-name thresh)))
+		(set! truthValue True)
+		(set! truthValue False)
+	)
+
+	truthValue
+)
+
+
+
+
+(DefineLink
+	(DefinedSchemaNode "update_emotion")
+	(LambdaLink
+	(VariableList
+		(VariableNode "$X")
+		(VariableNode "$Y")
+	)
+		(ExecutionOutputLink
+			(GroundedSchemaNode "scm: update_emotion")
+			(ListLink
+				(VariableNode "$X")
+				(VariableNode "$Y")
+			)
+		)
+	)
+)
+
+
+(DefineLink
+	(DefinedSchemaNode "emotionn")
+	(LambdaLink
+	(VariableList
+		(VariableNode "$X")
+		(VariableNode "$Y")
+	)
+		(ExecutionOutputLink
+			(GroundedSchemaNode "scm: emotionn")
+			(ListLink
+				(VariableNode "$X")
+				(VariableNode "$Y")
+			)
+		)
+	)
+)
 
 
