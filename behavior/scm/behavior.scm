@@ -46,22 +46,7 @@
 )
 
 
-(DefineLink
-	(DefinedSchemaNode "update_demand")
-	(LambdaLink
-	(VariableList
-		(VariableNode "$X")
-		(VariableNode "$Y")
-	)
-		(ExecutionOutputLink
-			(GroundedSchemaNode "scm: update_demand")
-			(ListLink
-				(VariableNode "$X")
-				(VariableNode "$Y")
-			)
-		)
-	)
-)
+
 
 ;(Define
 ;  (DefinedSchema "update_demand")
@@ -97,56 +82,23 @@
 
 
 
-(define-public (emotionn emoWord thresh)
+(define-public (emotion emoWord thresh)
 
 	(define emo (primitive-eval (string->symbol (cog-name emoWord))))
 
-	(define truthValue False)
+	;(define truthValue (stv 0 1))
 	
 	(if (>= (psi-get-number-value emo) (string->number (cog-name thresh)))
-		(set! truthValue True)
-		(set! truthValue False)
+		(stv 1 1)
+		(stv 0 1)
 	)
 
-	truthValue
+
 )
 
 
 
 
-(DefineLink
-	(DefinedSchemaNode "update_emotion")
-	(LambdaLink
-	(VariableList
-		(VariableNode "$X")
-		(VariableNode "$Y")
-	)
-		(ExecutionOutputLink
-			(GroundedSchemaNode "scm: update_emotion")
-			(ListLink
-				(VariableNode "$X")
-				(VariableNode "$Y")
-			)
-		)
-	)
-)
 
-
-(DefineLink
-	(DefinedSchemaNode "emotionn")
-	(LambdaLink
-	(VariableList
-		(VariableNode "$X")
-		(VariableNode "$Y")
-	)
-		(ExecutionOutputLink
-			(GroundedSchemaNode "scm: emotionn")
-			(ListLink
-				(VariableNode "$X")
-				(VariableNode "$Y")
-			)
-		)
-	)
-)
 
 
