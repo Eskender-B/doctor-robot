@@ -1,0 +1,7 @@
+topic: ~please_user (make_user_happy)
+
+#goal: (please_user=0.2) s:(hi) hi good human
+
+#goal: (please_user=0.1) s: (hello) hello, how are you
+
+#goal: (please_user=0.6) s: (^emotion(happy .8)) ^null_action

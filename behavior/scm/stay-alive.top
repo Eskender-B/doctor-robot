@@ -1,0 +1,5 @@
+topic: ~stay_alive (stay_awake)
+
+#goal: (stay_alive=0.5) s: (^battery(.1)) recharge my battery please
+
+#goal: (stay_alive=0.5) s: (^hardware_error) I have encounterd some hardware error
