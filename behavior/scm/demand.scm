@@ -30,7 +30,7 @@
 
 (define (sort-by-weight demand-list WEIGHT-FN)
 
-    (sort! demand-list (lambda (RA RB)
+    (sort demand-list (lambda (RA RB)
         (< (WEIGHT-FN RA) (WEIGHT-FN RB))))
 )
 
@@ -44,6 +44,10 @@
 ;(define demand-node (list-ref (cog-chase-link 'InheritanceLink 'ConceptNode (list-ref (psi-get-all-enabled-demands) 0)) 0))
 
 (define prev-count (psi-get-loop-count))
+
+;Arrange order of demands with least satisfied demand first
+;NEED TO FIX: psi-demand-cache should not be accessible here
+(set! psi-demand-cache (sort-by-weight (psi-get-all-enabled-demands) weight-fn))
 
 (define (update-demands)
 
@@ -63,24 +67,28 @@
 		)
 	)
 
-	;Arrange order of demands with least satisfied demand first
-	;NEED TO FIX: psi-demand-cache should not be accessible here
-	(set! psi-demand-cache (sort-by-weight (psi-get-all-enabled-demands) weight-fn))
 
 	(if (not (= prev-count (psi-get-loop-count)))
 		(let ((rule-demand (select-rule (psi-get-all-enabled-demands))))
+
 			
 			(if (not (null? rule-demand))
 				(begin
-					;(write (car rule-demand))
+					(display (psi-get-loop-count))
+					;(display (cadr rule-demand))
 					(set! prev-count (psi-get-loop-count))
-					(psi-demand-value-increase (cadr rule-demand) (Number (* (tv-mean (cog-tv (car rule-demand))) 100)))
+					(psi-demand-value-increase (cadr rule-demand) (Number (* (tv-mean (cog-tv (car rule-demand))) 10)))
+
+					;Arrange order of demands with least satisfied demand first
+					;NEED TO FIX: psi-demand-cache should not be accessible here
+					(set! psi-demand-cache (sort-by-weight (psi-get-all-enabled-demands) weight-fn))
 				)
 			)
 		)
 	)
 
 (stv 1 1)
+
 
 )
 
@@ -96,6 +104,8 @@
 
 
 ;Set demand updater for each chat demand
+;NEED TO FIX: there is redundancy in setting the same demand updater three times (Need to come up with a better way)
+;NEED TO FIX: One demand updater can update each chat demand (should not be like this)
 
 (for-each
 	(lambda(x)
