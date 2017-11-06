@@ -35,13 +35,17 @@
 )
 
 
+; ------------------------------------------------------------------
+;Make mutex for controlling access to ghost-anchor
+;ghost-anchor state should not be touched by the main thread when
+;the updater function update-demands runs in another thread (In psi-run thread)
+
+(define mtx (make-mutex))
+
+; ------------------------------------------------------------------
 
 
-;enable the least satisfied demand first
-;(define current-demand (find-minimum selected-demands))
-;(psi-demand-enable current-demand)
 
-;(define demand-node (list-ref (cog-chase-link 'InheritanceLink 'ConceptNode (list-ref (psi-get-all-enabled-demands) 0)) 0))
 
 (define prev-count (psi-get-loop-count))
 
@@ -69,21 +73,26 @@
 
 
 	(if (not (= prev-count (psi-get-loop-count)))
-		(let ((rule-demand (select-rule (psi-get-all-enabled-demands))))
+		(begin
+			(lock-mutex mtx)
 
-			
-			(if (not (null? rule-demand))
-				(begin
-					(display (psi-get-loop-count))
-					;(display (cadr rule-demand))
-					(set! prev-count (psi-get-loop-count))
-					(psi-demand-value-increase (cadr rule-demand) (Number (* (tv-mean (cog-tv (car rule-demand))) 10)))
+			(let ((rule-demand (select-rule (psi-get-all-enabled-demands))))
 
-					;Arrange order of demands with least satisfied demand first
-					;NEED TO FIX: psi-demand-cache should not be accessible here
-					(set! psi-demand-cache (sort-by-weight (psi-get-all-enabled-demands) weight-fn))
+				
+				(if (not (null? rule-demand))
+					(begin
+						(display (psi-get-loop-count))
+						;(display (cadr rule-demand))
+						(set! prev-count (psi-get-loop-count))
+						(psi-demand-value-increase (cadr rule-demand) (Number (* (tv-mean (cog-tv (car rule-demand))) 10)))
+
+						;Arrange order of demands with least satisfied demand first
+						;NEED TO FIX: psi-demand-cache should not be accessible here
+						(set! psi-demand-cache (sort-by-weight (psi-get-all-enabled-demands) weight-fn))
+					)
 				)
 			)
+			(unlock-mutex mtx)
 		)
 	)
 
@@ -111,4 +120,13 @@
 	(lambda(x)
 		(psi-set-updater! (DefinedPredicateNode "update-demands") x)
 	) selected-demands
+)
+
+
+;A mutex protected version of (ghost TXT)
+(define (input TXT)
+
+	(lock-mutex mtx)
+	(ghost TXT)
+	(unlock-mutex mtx)
 )

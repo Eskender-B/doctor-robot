@@ -1,4 +1,5 @@
 (use-modules
+	(ice-9 threads)
 	(opencog)
 	(opencog exec)
 	(opencog atom-types)
@@ -21,6 +22,7 @@
 
 
 (define-public selected-demands (list (ConceptNode "GHOST: please_user") (ConceptNode "GHOST: curiosity") (ConceptNode "GHOST: stay_alive")))
+
 
 (load "actions.scm")
 (load "demand.scm")
