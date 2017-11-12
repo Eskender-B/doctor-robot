@@ -31,7 +31,7 @@
 (define (sort-by-weight demand-list WEIGHT-FN)
 
     (sort demand-list (lambda (RA RB)
-        (< (WEIGHT-FN RA) (WEIGHT-FN RB))))
+        (<= (WEIGHT-FN RA) (WEIGHT-FN RB))))
 )
 
 
